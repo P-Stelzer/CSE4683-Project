@@ -499,15 +499,11 @@ PaymentDashboard2, PayCredit2, UserFlow2;</system>
 		</query>
 		<query>
 			<formula>PayCredit1.connect_verifier --&gt; PayCredit1.verifier_connected</formula>
-			<comment/>
+			<comment>Because these remote services randomly choose a channel to listen to, we cannot verify that the verifier will always connect when requested.  There might be a better way to model this but I do not know it.</comment>
 			<option key="--diagnostic" value="1"/>
 			<result outcome="failure" type="quality" timestamp="2025-05-04 00:53:11 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
-		</query>
-		<query>
-			<formula>not (E&lt;&gt; PayCredit1.verifier_connected)</formula>
-			<comment/>
 		</query>
 	</queries>
 </nta>
