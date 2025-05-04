@@ -3,6 +3,7 @@
 <nta>
 	<declaration>// Place global declarations here.
 const int NUM_USERS = 3;
+const int NUM_PROCESSES = 6;
 
 typedef struct {
     int id;
@@ -13,8 +14,8 @@ Account accounts[NUM_USERS];
 
 
 
-chan db_read_req, db_read_send;
-chan db_update[NUM_USERS];
+chan db_read_req[NUM_PROCESSES][NUM_USERS], db_read_send[NUM_PROCESSES][NUM_USERS];
+chan db_update[NUM_PROCESSES][NUM_USERS];
 broadcast chan db_update_confirm;
 
 
@@ -28,11 +29,11 @@ chan user_enter_dashboard[NUM_USERS], user_confirm_payment[NUM_USERS];
 
 const int NUM_QUEUES = 1;
 int queueRet[NUM_QUEUES];
-chan enqueue[NUM_QUEUES][NUM_USERS], dequeue[NUM_QUEUES];
+chan enqueue[NUM_QUEUES][NUM_PROCESSES], dequeue[NUM_QUEUES];
 </declaration>
 	<template>
 		<name>Queue</name>
-		<parameter>const int id, const int size</parameter>
+		<parameter>const int pid, const int id, const int size</parameter>
 		<declaration>int head;
 int tail;
 int arr[size];
@@ -40,9 +41,8 @@ int arr[size];
 
 void q_enqueue(int el)
 {
-    tail = (tail+1) % size;
     arr[tail]=el;
-    
+    tail = (tail+1) % size;
 }
 
 int q_dequeue()
@@ -81,14 +81,14 @@ bool q_hasNext()
 		<transition id="id4">
 			<source ref="id1"/>
 			<target ref="id0"/>
-			<label kind="select" x="25" y="-34">user:int[0,NUM_USERS-1]</label>
+			<label kind="select" x="25" y="-34">user:int[0,NUM_PROCESSES-1]</label>
 			<label kind="synchronisation" x="51" y="-17">enqueue[id][user]?</label>
 			<label kind="assignment" x="68" y="0">q_enqueue(user)</label>
 		</transition>
 	</template>
 	<template>
 		<name>User_T</name>
-		<parameter>const int user_id</parameter>
+		<parameter>const int pid, const int user_id</parameter>
 		<location id="id5" x="-102" y="8">
 			<name x="-136" y="-26">start</name>
 		</location>
@@ -181,6 +181,7 @@ bool q_hasNext()
 	</template>
 	<template>
 		<name>CreditVerification_T</name>
+		<parameter>const int pid</parameter>
 		<location id="id24" x="0" y="0">
 			<name x="-59" y="-34">waiting</name>
 		</location>
@@ -208,7 +209,7 @@ bool q_hasNext()
 	</template>
 	<template>
 		<name>PayCredit_T</name>
-		<parameter>const int user_id</parameter>
+		<parameter>const int pid, const int user_id</parameter>
 		<declaration>bool card_number, security_code, card_name;
 
 bool areFieldsFilled()
@@ -255,12 +256,12 @@ bool areFieldsFilled()
 		<transition id="id40">
 			<source ref="id30"/>
 			<target ref="id29"/>
-			<label kind="synchronisation" x="255" y="408">db_update[user_id]!</label>
+			<label kind="synchronisation" x="255" y="408">db_update[pid][user_id]!</label>
 		</transition>
 		<transition id="id41">
 			<source ref="id36"/>
 			<target ref="id30"/>
-			<label kind="synchronisation" x="527" y="408">enqueue[0][user_id]!</label>
+			<label kind="synchronisation" x="527" y="408">enqueue[0][pid]!</label>
 		</transition>
 		<transition id="id42">
 			<source ref="id37"/>
@@ -343,84 +344,110 @@ security_code := false</label>
 	</template>
 	<template>
 		<name>DB_T</name>
-		<declaration>int next;</declaration>
-		<location id="id55" x="-153" y="-263">
-			<name x="-212" y="-297">process_update</name>
+		<parameter>const int pid</parameter>
+		<declaration>int req_pid;
+int req_user;</declaration>
+		<location id="id55" x="289" y="-178">
+			<name x="279" y="-212">process_read</name>
 		</location>
-		<location id="id56" x="0" y="-178">
-			<name x="17" y="-187">request_received</name>
+		<location id="id56" x="-289" y="-178">
+			<name x="-348" y="-212">process_update</name>
 		</location>
-		<location id="id57" x="0" y="0">
+		<location id="id57" x="0" y="-323">
+			<name x="-68" y="-357">request_received</name>
+		</location>
+		<location id="id58" x="0" y="0">
 			<name x="-25" y="8">waiting</name>
 		</location>
-		<init ref="id57"/>
-		<transition id="id58">
-			<source ref="id55"/>
-			<target ref="id57"/>
-			<label kind="synchronisation" x="-323" y="-153">db_update_confirm!</label>
-			<nail x="-297" y="-178"/>
-		</transition>
+		<init ref="id58"/>
 		<transition id="id59">
-			<source ref="id56"/>
-			<target ref="id55"/>
-			<label kind="synchronisation" x="-135" y="-237">db_update[next]?</label>
+			<source ref="id55"/>
+			<target ref="id58"/>
+			<label kind="synchronisation" x="136" y="-42">db_read_send[req_pid][req_user]!</label>
+			<nail x="289" y="-102"/>
 		</transition>
 		<transition id="id60">
 			<source ref="id57"/>
+			<target ref="id55"/>
+			<label kind="select" x="76" y="-306">user:int[0,NUM_USERS-1]</label>
+			<label kind="synchronisation" x="68" y="-289">db_read_req[req_pid][user]?</label>
+			<label kind="assignment" x="119" y="-272">req_user:=user</label>
+		</transition>
+		<transition id="id61">
+			<source ref="id56"/>
+			<target ref="id58"/>
+			<label kind="synchronisation" x="-255" y="-42">db_update_confirm!</label>
+			<nail x="-289" y="-110"/>
+		</transition>
+		<transition id="id62">
+			<source ref="id57"/>
 			<target ref="id56"/>
-			<label kind="synchronisation" x="-25" y="-127">dequeue[0]?</label>
-			<label kind="assignment" x="-76" y="-110">next:= queueRet[0]</label>
+			<label kind="select" x="-263" y="-306">user:int[0,NUM_USERS-1]</label>
+			<label kind="synchronisation" x="-272" y="-289">db_update[req_pid][user]?</label>
+			<label kind="assignment" x="-238" y="-272">req_user:=user</label>
+		</transition>
+		<transition id="id63">
+			<source ref="id58"/>
+			<target ref="id57"/>
+			<label kind="synchronisation" x="-25" y="-127">dequeue[0]!</label>
+			<label kind="assignment" x="-59" y="-110">req_pid:= queueRet[0]</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">PaymentDashboard_T</name>
-		<parameter>const int user_id</parameter>
+		<parameter>const int pid, const int user_id</parameter>
 		<declaration>// Place local declarations here.
 </declaration>
-		<location id="id61" x="0" y="0">
-			<name x="-42" y="-34">waiting</name>
+		<location id="id64" x="272" y="-136">
+			<name x="246" y="-170">req_db</name>
 		</location>
-		<location id="id62" x="178" y="-8">
-			<name x="144" y="-51">get_owed</name>
+		<location id="id65" x="-127" y="-8">
+			<name x="-169" y="-42">waiting</name>
 		</location>
-		<location id="id63" x="357" y="0">
-			<name x="297" y="-51">wait_db_response</name>
+		<location id="id66" x="178" y="-8">
+			<name x="144" y="8">get_owed</name>
 		</location>
-		<location id="id64" x="518" y="17">
-			<name x="518" y="-17">show_owed</name>
+		<location id="id67" x="535" y="-136">
+			<name x="493" y="-170">wait_db_response</name>
 		</location>
-		<init ref="id61"/>
-		<transition id="id65">
+		<location id="id68" x="629" y="-8">
+			<name x="603" y="25">show_owed</name>
+		</location>
+		<init ref="id65"/>
+		<transition id="id69">
 			<source ref="id64"/>
-			<target ref="id62"/>
-			<label kind="synchronisation" x="229" y="110">db_update_confirm?</label>
-			<nail x="289" y="110"/>
-			<nail x="289" y="110"/>
+			<target ref="id67"/>
+			<label kind="synchronisation" x="331" y="-161">db_read_req[pid][user_id]!</label>
 		</transition>
-		<transition id="id66">
-			<source ref="id61"/>
-			<target ref="id62"/>
-			<label kind="synchronisation" x="0" y="8">user_enter_dashboard[user_id]?</label>
-		</transition>
-		<transition id="id67">
-			<source ref="id63"/>
+		<transition id="id70">
+			<source ref="id66"/>
 			<target ref="id64"/>
-			<label kind="synchronisation" x="382" y="-17">db_read_send?</label>
+			<label kind="synchronisation" x="161" y="-102">enqueue[0][pid]!</label>
 		</transition>
-		<transition id="id68">
-			<source ref="id62"/>
-			<target ref="id63"/>
-			<label kind="synchronisation" x="212" y="-25">db_read_req!</label>
+		<transition id="id71">
+			<source ref="id68"/>
+			<target ref="id66"/>
+			<label kind="synchronisation" x="340" y="17">db_update_confirm?</label>
+		</transition>
+		<transition id="id72">
+			<source ref="id65"/>
+			<target ref="id66"/>
+			<label kind="synchronisation" x="-93" y="-34">user_enter_dashboard[user_id]?</label>
+		</transition>
+		<transition id="id73">
+			<source ref="id67"/>
+			<target ref="id68"/>
+			<label kind="synchronisation" x="459" y="-85">db_read_send[pid][user_id]?</label>
 		</transition>
 	</template>
-	<system>CreditVerification = CreditVerification_T();
-Database = DB_T();
-DBQueue = Queue(0,100);
+	<system>CreditVerification = CreditVerification_T(0);
+Database = DB_T(1);
+DBQueue = Queue(2,0,100);
 
-PaymentDashboard = PaymentDashboard_T(0);
-PayCredit = PayCredit_T(0);
+PaymentDashboard = PaymentDashboard_T(3,0);
+PayCredit = PayCredit_T(4,0);
 
-UserFlow = User_T(0);
+UserFlow = User_T(5,0);
 
 
 system UserFlow, CreditVerification, PayCredit, Database, PaymentDashboard, DBQueue;</system>
@@ -445,28 +472,28 @@ system UserFlow, CreditVerification, PayCredit, Database, PaymentDashboard, DBQu
 			<formula>A[] not deadlock</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-03 17:11:43 -0400">
+			<result outcome="failure" type="quality" timestamp="2025-05-03 21:09:52 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; PayCredit.attempt_payment imply (PayCredit.card_number &amp;&amp; PayCredit.security_code &amp;&amp; PayCredit.card_name)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-03 17:11:41 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-03 21:09:46 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; (PayCredit.payment_success imply UserFlow.payment_sent) &amp;&amp; (UserFlow.payment_sent imply PayCredit.payment_success)</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-03 17:11:39 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-03 21:09:49 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; (PayCredit.card_info_invalid imply UserFlow.verification_failed) &amp;&amp; (UserFlow.verification_failed imply PayCredit.card_info_invalid)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-03 17:11:37 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-03 21:09:48 -0400">
 			</result>
 		</query>
 	</queries>
