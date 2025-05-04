@@ -2,9 +2,9 @@
 <!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
 <nta>
 	<declaration>// Place global declarations here.
-const int NUM_USERS = 3;
+const int NUM_USERS = 2;
 typedef int[0,NUM_USERS-1] UserRange;
-const int NUM_PROCESSES = 7;
+const int NUM_PROCESSES = 10;
 typedef int[0,NUM_PROCESSES] ProcessRange;
 
 typedef struct {
@@ -208,7 +208,7 @@ bool q_hasNext()
 		<transition id="id30">
 			<source ref="id29"/>
 			<target ref="id26"/>
-			<label kind="synchronisation" x="-824" y="-272">verify_card[pid]?</label>
+			<label kind="synchronisation" x="-850" y="-272">verify_card[req_pid]?</label>
 		</transition>
 		<transition id="id31">
 			<source ref="id26"/>
@@ -481,18 +481,27 @@ int req_user;</declaration>
 		</transition>
 	</template>
 	<system>Database = DB_T(0);
-DBQueue = Queue(1,0,NUM_PROCESSES);
+DBQueue = Queue(1,0,5);
 
 CreditVerification = CreditVerification_T(2);
-CreditVerifierQueue = Queue(3,1,NUM_PROCESSES);
+CreditVerifierQueue = Queue(3,1,5);
 
-PaymentDashboard = PaymentDashboard_T(4,0);
-PayCredit = PayCredit_T(5,0);
+PaymentDashboard1 = PaymentDashboard_T(4,0);
+PayCredit1 = PayCredit_T(5,0);
 
-UserFlow = User_T(6,0);
+UserFlow1 = User_T(6,0);
+
+PaymentDashboard2 = PaymentDashboard_T(7,1);
+PayCredit2 = PayCredit_T(8,1);
+
+UserFlow2 = User_T(9,1);
 
 
-system UserFlow, CreditVerification, PayCredit, Database, PaymentDashboard, DBQueue, CreditVerifierQueue;</system>
+system
+Database, DBQueue,
+CreditVerification, CreditVerifierQueue,
+PaymentDashboard1, PayCredit1, UserFlow1,
+PaymentDashboard2, PayCredit2, UserFlow2;</system>
 	<queries>
 		<query>
 			<formula>E&lt;&gt; U.payment_sent</formula>
@@ -515,10 +524,6 @@ system UserFlow, CreditVerification, PayCredit, Database, PaymentDashboard, DBQu
 			<comment/>
 			<option key="--statespace-consumption" value="1"/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="failure" type="quality" timestamp="2025-05-03 22:33:32 -0400">
-				<option key="--statespace-consumption" value="1"/>
-				<option key="--diagnostic" value="1"/>
-			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; PayCredit.attempt_payment imply (PayCredit.card_number &amp;&amp; PayCredit.security_code &amp;&amp; PayCredit.card_name)</formula>
