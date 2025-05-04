@@ -545,5 +545,9 @@ PaymentDashboard2, PayCredit2, UserFlow2;</system>
 			<result outcome="success" type="quality" timestamp="2025-05-03 21:09:48 -0400">
 			</result>
 		</query>
+		<query>
+			<formula>A[] not (PayCredit1.verifying_card &amp;&amp; PayCredit2.verifying_card)</formula>
+			<comment/>
+		</query>
 	</queries>
 </nta>
