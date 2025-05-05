@@ -45,24 +45,36 @@ chan priority user_enter_dashboard, user_leave_dashboard, user_submit_check, pay
 chan priority credit_account, charge_account &lt; default;
 
 ProcessRange p;
+ProcessRange u;
 void incP()
 {
-    p=((p+1)%NUM_PROCESSES)+1;
+    p=(p%NUM_PROCESSES)+1;
 }
 urgent chan inc_p;
 chan priority inc_p &lt; default;
 
 
-ProcessRange u;
+
 void incU()
 {
-    u=((u+1)%NUM_USERS)+1;
+    u=(u%NUM_USERS)+1;
 }
 urgent chan inc_u;
 chan priority inc_u &lt; default;
+
+
+void inc()
+{
+    incU();
+    if (u==1)
+    {
+       incP();
+    }
+}
 </declaration>
 	<template>
 		<name>ClockU</name>
+		<declaration>clock c;</declaration>
 		<location id="id0" x="0" y="0">
 		</location>
 		<init ref="id0"/>
@@ -70,12 +82,14 @@ chan priority inc_u &lt; default;
 			<source ref="id0"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="0" y="-51">inc_u?</label>
-			<label kind="assignment" x="0" y="-34">incU()</label>
-			<nail x="0" y="-68"/>
+			<label kind="assignment" x="0" y="-34">inc(),
+c:=0</label>
+			<nail x="85" y="-93"/>
 		</transition>
 	</template>
 	<template>
 		<name>ClockP</name>
+		<declaration>clock c;</declaration>
 		<location id="id2" x="0" y="0">
 		</location>
 		<init ref="id2"/>
@@ -83,8 +97,9 @@ chan priority inc_u &lt; default;
 			<source ref="id2"/>
 			<target ref="id2"/>
 			<label kind="synchronisation" x="18" y="-38">inc_p?</label>
-			<label kind="assignment" x="18" y="-21">incP()</label>
-			<nail x="76" y="-42"/>
+			<label kind="assignment" x="18" y="-21">inc(),
+c:=0</label>
+			<nail x="119" y="-85"/>
 		</transition>
 	</template>
 	<template>
@@ -169,6 +184,7 @@ incU()</label>
 		<transition id="id21">
 			<source ref="id19"/>
 			<target ref="id16"/>
+			<label kind="synchronisation" x="323" y="-280">credit_account[user_id]!</label>
 			<nail x="493" y="-263"/>
 		</transition>
 		<transition id="id22">
@@ -195,7 +211,7 @@ incU()</label>
 		<transition id="id25">
 			<source ref="id15"/>
 			<target ref="id17"/>
-			<label kind="synchronisation" x="102" y="59">charge_applied[user_id]?</label>
+			<label kind="synchronisation" x="34" y="110">charge_applied[user_id]?</label>
 			<nail x="102" y="68"/>
 		</transition>
 		<transition id="id26">
@@ -279,6 +295,7 @@ incU()</label>
 	<template>
 		<name>User_T</name>
 		<parameter>const UserRange user_id</parameter>
+		<declaration>clock c;</declaration>
 		<location id="id40" x="-144" y="-178">
 			<name x="-187" y="-212">wire_transfer_sent</name>
 		</location>
@@ -323,6 +340,7 @@ incU()</label>
 		<transition id="id51">
 			<source ref="id43"/>
 			<target ref="id42"/>
+			<label kind="guard" x="-34" y="68">c&gt;0</label>
 			<label kind="synchronisation" x="-110" y="34">user_leave_dashboard[user_id]!</label>
 			<label kind="assignment" x="-102" y="51">user_online[user_id]:=false</label>
 			<nail x="102" y="34"/>
@@ -402,7 +420,8 @@ incU()</label>
 			<source ref="id42"/>
 			<target ref="id43"/>
 			<label kind="synchronisation" x="-110" y="-34">user_enter_dashboard[user_id]!</label>
-			<label kind="assignment" x="-93" y="-17">user_online[user_id]:=true</label>
+			<label kind="assignment" x="-93" y="-17">user_online[user_id]:=true,
+c=0</label>
 			<nail x="-85" y="-17"/>
 			<nail x="102" y="-17"/>
 		</transition>
@@ -698,7 +717,6 @@ incP()</label>
 		</location>
 		<location id="id124" x="493" y="-8">
 			<name x="484" y="0">show_owed</name>
-			<label kind="invariant" x="416" y="-42">user_online[user_id]</label>
 		</location>
 		<location id="id125" x="688" y="-8">
 			<name x="705" y="-25">check_user_status</name>
@@ -715,12 +733,14 @@ incP()</label>
 		<transition id="id127">
 			<source ref="id125"/>
 			<target ref="id121"/>
-			<nail x="527" y="127"/>
-			<nail x="51" y="127"/>
+			<label kind="guard" x="595" y="76">not user_online[user_id]</label>
+			<nail x="526" y="136"/>
+			<nail x="50" y="136"/>
 		</transition>
 		<transition id="id128">
 			<source ref="id125"/>
 			<target ref="id124"/>
+			<label kind="guard" x="510" y="-34">user_online[user_id]</label>
 		</transition>
 		<transition id="id129">
 			<source ref="id120"/>
@@ -799,40 +819,40 @@ ClockU, ClockP;</system>
 		<query>
 			<formula>A&lt;&gt; PayCredit1.attempt_payment imply (PayCredit1.card_number &amp;&amp; PayCredit1.security_code &amp;&amp; PayCredit1.card_name)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:02 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 02:09:18 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; (PayCredit1.payment_succeed imply UserFlow1.payment_sent) &amp;&amp; (UserFlow1.payment_sent imply PayCredit1.payment_succeed)</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:04 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 02:09:18 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; (PayCredit1.card_info_invalid imply UserFlow1.verification_failed) &amp;&amp; (UserFlow1.verification_failed imply PayCredit1.card_info_invalid)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:05 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 02:09:18 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A[] not (PayCredit1.verifier_connected &amp;&amp; PayCredit2.verifier_connected)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:06 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 02:09:37 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A[] not (PayCredit1.db_connected &amp;&amp; PayCredit2.db_connected)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:08 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 02:09:57 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>PayCredit1.connect_verifier --&gt; PayCredit1.verifier_connected</formula>
 			<comment>Because these remote services randomly choose a channel to listen to, we cannot verify that the verifier will always connect when requested.  There might be a better way to model this but I do not know it.</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="failure" type="quality" timestamp="2025-05-05 01:16:46 -0400">
+			<result outcome="failure" type="quality" timestamp="2025-05-05 02:11:27 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -840,7 +860,7 @@ ClockU, ClockP;</system>
 			<formula>PayCredit1.connect_db --&gt; PayCredit1.db_connected</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:15 -0400">
+			<result outcome="failure" type="quality" timestamp="2025-05-05 02:11:28 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -848,14 +868,14 @@ ClockU, ClockP;</system>
 			<formula>Admin1.applying_credit --&gt; Admin1.idle</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="failure" type="quality" timestamp="2025-05-05 01:16:19 -0400">
+			<result outcome="failure" type="quality" timestamp="2025-05-05 02:11:28 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>(PaymentDashboard1.check_user_status &amp;&amp; not user_online[1]) --&gt; PaymentDashboard1.waiting</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:21 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 02:11:48 -0400">
 			</result>
 		</query>
 		<query>
@@ -866,7 +886,7 @@ ClockU, ClockP;</system>
 			<formula>UserFlow1.check_submitted --&gt; Admin1.applying_credit</formula>
 			<comment>A check the user submit will cause a credit on their account</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:27 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 02:12:07 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -874,7 +894,7 @@ ClockU, ClockP;</system>
 			<formula>CreditAccount1.db_update_confirmed --&gt; (PaymentDashboard1.show_owed || PaymentDashboard2.show_owed)</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="failure" type="quality" timestamp="2025-05-05 01:16:30 -0400">
+			<result outcome="failure" type="quality" timestamp="2025-05-05 02:12:58 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -882,7 +902,7 @@ ClockU, ClockP;</system>
 			<formula>CreditAccount1.db_update_confirmed --&gt; CreditAccount1.waiting</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:32 -0400">
+			<result outcome="failure" type="quality" timestamp="2025-05-05 02:13:01 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
