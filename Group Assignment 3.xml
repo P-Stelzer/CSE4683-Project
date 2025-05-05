@@ -68,32 +68,28 @@ chan priority user_enter_dashboard, user_leave_dashboard, user_submit_check, pay
 chan priority credit_account, charge_account &lt; inc_p;</declaration>
 	<template>
 		<name>ClockU</name>
-		<declaration>clock c;</declaration>
 		<location id="id0" x="0" y="0">
 		</location>
 		<init ref="id0"/>
 		<transition id="id1">
 			<source ref="id0"/>
 			<target ref="id0"/>
-			<label kind="synchronisation" x="0" y="-51">inc_u?</label>
-			<label kind="assignment" x="0" y="-34">inc(),
-c:=0</label>
-			<nail x="85" y="-93"/>
+			<label kind="synchronisation" x="25" y="-76">inc_u?</label>
+			<label kind="assignment" x="25" y="-59">inc()</label>
+			<nail x="34" y="-42"/>
 		</transition>
 	</template>
 	<template>
 		<name>ClockP</name>
-		<declaration>clock c;</declaration>
 		<location id="id2" x="0" y="0">
 		</location>
 		<init ref="id2"/>
 		<transition id="id3">
 			<source ref="id2"/>
 			<target ref="id2"/>
-			<label kind="synchronisation" x="18" y="-38">inc_p?</label>
-			<label kind="assignment" x="18" y="-21">inc(),
-c:=0</label>
-			<nail x="119" y="-85"/>
+			<label kind="synchronisation" x="34" y="-76">inc_p?</label>
+			<label kind="assignment" x="34" y="-59">inc()</label>
+			<nail x="42" y="-42"/>
 		</transition>
 	</template>
 	<template>
@@ -159,60 +155,65 @@ incU()</label>
 			<name x="-51" y="161">applying_charge</name>
 		</location>
 		<location id="id16" x="0" y="-229">
-			<name x="-10" y="-263">applying_credit</name>
+			<name x="-51" y="-263">applying_credit</name>
 		</location>
 		<location id="id17" x="0" y="-8">
-			<name x="-10" y="-42">idle</name>
+			<name x="8" y="-34">idle</name>
 		</location>
-		<location id="id18" x="459" y="0">
+		<location id="id18" x="195" y="-127">
+			<name x="212" y="-136">check_received</name>
 		</location>
-		<location id="id19" x="493" y="42">
+		<location id="id19" x="433" y="-127">
+			<name x="450" y="-136">wire_transfer_received</name>
 		</location>
 		<init ref="id17"/>
 		<transition id="id20">
 			<source ref="id17"/>
 			<target ref="id17"/>
-			<label kind="synchronisation" x="-58" y="-17">inc_u!</label>
+			<label kind="synchronisation" x="-119" y="0">inc_u!</label>
 			<nail x="-76" y="8"/>
 		</transition>
 		<transition id="id21">
 			<source ref="id19"/>
 			<target ref="id16"/>
-			<label kind="synchronisation" x="323" y="-280">credit_account[user_id]!</label>
-			<label kind="assignment" x="18" y="-246">wire_transfer[user_id]:=false</label>
-			<nail x="493" y="-263"/>
+			<label kind="synchronisation" x="433" y="-212">credit_account[user_id]!</label>
+			<label kind="assignment" x="433" y="-195">wire_transfer[user_id]:=false</label>
+			<nail x="433" y="-229"/>
 		</transition>
 		<transition id="id22">
 			<source ref="id17"/>
 			<target ref="id19"/>
-			<label kind="guard" x="178" y="25">wire_transfer[u]</label>
-			<label kind="assignment" x="195" y="42">user_id:=u,
+			<label kind="guard" x="433" y="-102">wire_transfer[u]</label>
+			<label kind="assignment" x="433" y="-85">user_id:=u,
 incU()</label>
+			<nail x="433" y="-8"/>
 		</transition>
 		<transition id="id23">
 			<source ref="id18"/>
 			<target ref="id16"/>
-			<label kind="synchronisation" x="170" y="-229">credit_account[user_id]!</label>
-			<nail x="459" y="-229"/>
+			<label kind="synchronisation" x="195" y="-178">credit_account[user_id]!</label>
+			<nail x="195" y="-212"/>
 		</transition>
 		<transition id="id24">
 			<source ref="id17"/>
 			<target ref="id18"/>
-			<label kind="synchronisation" x="170" y="-42">user_submit_check[u]?</label>
-			<label kind="assignment" x="170" y="-25">user_id:=u,
+			<label kind="synchronisation" x="204" y="-102">user_submit_check[u]?</label>
+			<label kind="assignment" x="204" y="-85">user_id:=u,
 incU()</label>
+			<nail x="195" y="-25"/>
 		</transition>
 		<transition id="id25">
 			<source ref="id15"/>
 			<target ref="id17"/>
-			<label kind="synchronisation" x="34" y="110">charge_applied[user_id]?</label>
-			<nail x="102" y="68"/>
+			<label kind="synchronisation" x="110" y="59">charge_applied[user_id]?</label>
+			<nail x="102" y="110"/>
+			<nail x="102" y="17"/>
 		</transition>
 		<transition id="id26">
 			<source ref="id17"/>
 			<target ref="id15"/>
-			<label kind="synchronisation" x="-144" y="51">charge_account[u]!</label>
-			<label kind="assignment" x="-85" y="68">user_id:=u,
+			<label kind="synchronisation" x="-152" y="51">charge_account[u]!</label>
+			<label kind="assignment" x="-93" y="68">user_id:=u,
 incU()</label>
 		</transition>
 		<transition id="id27">
@@ -290,80 +291,84 @@ incU()</label>
 		<name>User_T</name>
 		<parameter>const UserRange user_id</parameter>
 		<declaration>clock c;</declaration>
-		<location id="id40" x="-144" y="-178">
-			<name x="-187" y="-212">wire_transfer_sent</name>
+		<location id="id40" x="-170" y="-170">
+			<name x="-213" y="-204">wire_transfer_sent</name>
 		</location>
-		<location id="id41" x="-144" y="229">
-			<name x="-195" y="238">check_submitted</name>
+		<location id="id41" x="-170" y="204">
+			<name x="-221" y="213">check_submitted</name>
 		</location>
-		<location id="id42" x="-144" y="8">
-			<name x="-195" y="-8">idle</name>
+		<location id="id42" x="-170" y="0">
+			<name x="-221" y="-8">idle</name>
 		</location>
-		<location id="id43" x="204" y="8">
-			<name x="178" y="34">in_dashboard</name>
+		<location id="id43" x="204" y="0">
+			<name x="178" y="26">in_dashboard</name>
 		</location>
-		<location id="id44" x="518" y="8">
-			<name x="535" y="-9">input_info</name>
+		<location id="id44" x="518" y="0">
+			<name x="535" y="-17">input_info</name>
 		</location>
-		<location id="id45" x="816" y="25">
-			<name x="806" y="-9">payment_sent</name>
+		<location id="id45" x="816" y="0">
+			<name x="833" y="-8">payment_sent</name>
 		</location>
-		<location id="id46" x="518" y="-153">
-			<name x="459" y="-195">waiting_response</name>
+		<location id="id46" x="518" y="-169">
+			<name x="493" y="-203">waiting_response</name>
 		</location>
-		<location id="id47" x="204" y="-153">
-			<name x="136" y="-187">payment_failed</name>
+		<location id="id47" x="204" y="-169">
+			<name x="136" y="-203">payment_failed</name>
 			<committed/>
 		</location>
-		<location id="id48" x="331" y="-59">
-			<name x="246" y="-93">verification_failed</name>
+		<location id="id48" x="255" y="-84">
+			<name x="272" y="-92">verification_failed</name>
 			<committed/>
 		</location>
 		<init ref="id42"/>
 		<transition id="id49">
 			<source ref="id40"/>
 			<target ref="id42"/>
-			<nail x="-195" y="-85"/>
+			<nail x="-221" y="-144"/>
+			<nail x="-221" y="-25"/>
 		</transition>
 		<transition id="id50">
 			<source ref="id42"/>
 			<target ref="id40"/>
-			<label kind="guard" x="-144" y="-119">not wire_transfer[user_id]</label>
-			<label kind="assignment" x="-144" y="-102">wire_transfer[user_id]:=true</label>
+			<label kind="guard" x="-170" y="-127">not wire_transfer[user_id]</label>
+			<label kind="assignment" x="-170" y="-110">wire_transfer[user_id]:=true</label>
 		</transition>
 		<transition id="id51">
 			<source ref="id43"/>
 			<target ref="id42"/>
-			<label kind="guard" x="-34" y="68">c&gt;0</label>
-			<label kind="synchronisation" x="-110" y="34">user_leave_dashboard[user_id]!</label>
+			<label kind="guard" x="-102" y="17">c&gt;0</label>
+			<label kind="synchronisation" x="-102" y="34">user_leave_dashboard[user_id]!</label>
 			<label kind="assignment" x="-102" y="51">user_online[user_id]:=false</label>
-			<nail x="102" y="34"/>
-			<nail x="-85" y="34"/>
+			<nail x="170" y="51"/>
+			<nail x="-136" y="50"/>
 		</transition>
 		<transition id="id52">
 			<source ref="id41"/>
 			<target ref="id42"/>
-			<nail x="-195" y="110"/>
+			<nail x="-221" y="178"/>
+			<nail x="-221" y="25"/>
 		</transition>
 		<transition id="id53">
 			<source ref="id42"/>
 			<target ref="id41"/>
-			<label kind="synchronisation" x="-135" y="136">user_submit_check[user_id]!</label>
+			<label kind="synchronisation" x="-170" y="110">user_submit_check[user_id]!</label>
 		</transition>
 		<transition id="id54">
 			<source ref="id45"/>
 			<target ref="id43"/>
-			<nail x="816" y="272"/>
-			<nail x="204" y="272"/>
+			<nail x="816" y="204"/>
+			<nail x="204" y="204"/>
 		</transition>
 		<transition id="id55">
 			<source ref="id48"/>
 			<target ref="id44"/>
+			<nail x="255" y="-25"/>
 		</transition>
 		<transition id="id56">
 			<source ref="id46"/>
 			<target ref="id48"/>
-			<label kind="synchronisation" x="374" y="-119">fields_invalid[user_id]?</label>
+			<label kind="synchronisation" x="255" y="-135">fields_invalid[user_id]?</label>
+			<nail x="255" y="-152"/>
 		</transition>
 		<transition id="id57">
 			<source ref="id47"/>
@@ -372,65 +377,63 @@ incU()</label>
 		<transition id="id58">
 			<source ref="id46"/>
 			<target ref="id47"/>
-			<label kind="synchronisation" x="246" y="-178">pay_credit_failed[user_id]?</label>
+			<label kind="synchronisation" x="246" y="-194">pay_credit_failed[user_id]?</label>
 		</transition>
 		<transition id="id59">
 			<source ref="id46"/>
 			<target ref="id45"/>
-			<label kind="synchronisation" x="637" y="-59">pay_credit_succeed[user_id]?</label>
+			<label kind="synchronisation" x="561" y="-169">pay_credit_succeed[user_id]?</label>
+			<nail x="816" y="-169"/>
 		</transition>
 		<transition id="id60">
 			<source ref="id44"/>
 			<target ref="id46"/>
-			<label kind="synchronisation" x="442" y="-42">user_confirm_payment[user_id]!</label>
+			<label kind="synchronisation" x="255" y="-59">user_confirm_payment[user_id]!</label>
 		</transition>
 		<transition id="id61">
 			<source ref="id44"/>
 			<target ref="id44"/>
-			<label kind="synchronisation" x="561" y="102">enter_security_code[user_id]!</label>
-			<nail x="680" y="153"/>
-			<nail x="629" y="195"/>
+			<label kind="synchronisation" x="552" y="77">enter_security_code[user_id]!</label>
+			<nail x="612" y="77"/>
 		</transition>
 		<transition id="id62">
 			<source ref="id44"/>
 			<target ref="id44"/>
-			<label kind="synchronisation" x="433" y="204">enter_card_number[user_id]!</label>
-			<nail x="569" y="204"/>
-			<nail x="484" y="204"/>
+			<label kind="synchronisation" x="425" y="128">enter_card_number[user_id]!</label>
+			<nail x="518" y="128"/>
 		</transition>
 		<transition id="id63">
 			<source ref="id44"/>
 			<target ref="id44"/>
-			<label kind="synchronisation" x="272" y="102">enter_card_name[user_id]!</label>
-			<nail x="442" y="196"/>
-			<nail x="382" y="162"/>
+			<label kind="synchronisation" x="280" y="77">enter_card_name[user_id]!</label>
+			<nail x="425" y="77"/>
 		</transition>
 		<transition id="id64">
 			<source ref="id43"/>
 			<target ref="id44"/>
-			<label kind="synchronisation" x="280" y="8">pay_credit[user_id]!</label>
+			<label kind="synchronisation" x="280" y="0">pay_credit[user_id]!</label>
 		</transition>
 		<transition id="id65">
 			<source ref="id42"/>
 			<target ref="id43"/>
-			<label kind="synchronisation" x="-110" y="-34">user_enter_dashboard[user_id]!</label>
-			<label kind="assignment" x="-93" y="-17">user_online[user_id]:=true,
+			<label kind="synchronisation" x="-102" y="-68">user_enter_dashboard[user_id]!</label>
+			<label kind="assignment" x="-102" y="-51">user_online[user_id]:=true,
 c=0</label>
-			<nail x="-85" y="-17"/>
-			<nail x="102" y="-17"/>
+			<nail x="-136" y="-51"/>
+			<nail x="170" y="-50"/>
 		</transition>
 	</template>
 	<template>
 		<name>CreditVerification_T</name>
 		<declaration>int req_pid;</declaration>
-		<location id="id66" x="-765" y="-374">
-			<name x="-816" y="-408">verifying_card</name>
+		<location id="id66" x="-765" y="-178">
+			<name x="-816" y="-212">verifying_card</name>
 		</location>
 		<location id="id67" x="-765" y="85">
 			<name x="-790" y="93">waiting</name>
 		</location>
-		<location id="id68" x="-765" y="-204">
-			<name x="-833" y="-238">processing_request</name>
+		<location id="id68" x="-765" y="-59">
+			<name x="-748" y="-67">request_received</name>
 		</location>
 		<init ref="id67"/>
 		<transition id="id69">
@@ -442,26 +445,28 @@ c=0</label>
 		<transition id="id70">
 			<source ref="id67"/>
 			<target ref="id68"/>
-			<label kind="synchronisation" x="-765" y="-76">verifier_req[p]?</label>
-			<label kind="assignment" x="-765" y="-59">req_pid:=p,
+			<label kind="synchronisation" x="-756" y="-17">verifier_req[p]?</label>
+			<label kind="assignment" x="-756" y="0">req_pid:=p,
 incP()</label>
 		</transition>
 		<transition id="id71">
 			<source ref="id68"/>
 			<target ref="id66"/>
-			<label kind="synchronisation" x="-850" y="-272">verify_card[req_pid]?</label>
+			<label kind="synchronisation" x="-756" y="-119">verify_card[req_pid]?</label>
 		</transition>
 		<transition id="id72">
 			<source ref="id66"/>
 			<target ref="id67"/>
-			<label kind="synchronisation" x="-1062" y="-102">card_invalid[req_pid]!</label>
-			<nail x="-977" y="-93"/>
+			<label kind="synchronisation" x="-952" y="-178">card_invalid[req_pid]!</label>
+			<nail x="-969" y="-178"/>
+			<nail x="-969" y="85"/>
 		</transition>
 		<transition id="id73">
 			<source ref="id66"/>
 			<target ref="id67"/>
-			<label kind="synchronisation" x="-620" y="-102">card_verified[req_pid]!</label>
-			<nail x="-544" y="-93"/>
+			<label kind="synchronisation" x="-748" y="-178">card_verified[req_pid]!</label>
+			<nail x="-552" y="-178"/>
+			<nail x="-552" y="85"/>
 		</transition>
 	</template>
 	<template>
@@ -473,17 +478,17 @@ bool areFieldsFilled()
 {
     return card_name &amp;&amp; card_number &amp;&amp; security_code;
 }</declaration>
-		<location id="id74" x="765" y="331">
-			<name x="782" y="323">payment_succeed</name>
+		<location id="id74" x="765" y="280">
+			<name x="782" y="272">payment_succeed</name>
 		</location>
-		<location id="id75" x="765" y="-119">
-			<name x="782" y="-127">verifier_connected</name>
+		<location id="id75" x="765" y="-76">
+			<name x="782" y="-84">verifier_connected</name>
 		</location>
-		<location id="id76" x="212" y="408">
-			<name x="161" y="374">db_update_sent</name>
+		<location id="id76" x="212" y="357">
+			<name x="161" y="323">db_update_sent</name>
 		</location>
-		<location id="id77" x="493" y="408">
-			<name x="442" y="374">db_connected</name>
+		<location id="id77" x="493" y="357">
+			<name x="442" y="323">db_connected</name>
 		</location>
 		<location id="id78" x="-161" y="8">
 			<name x="-195" y="-26">waiting</name>
@@ -497,11 +502,11 @@ bool areFieldsFilled()
 		<location id="id81" x="765" y="8">
 			<name x="782" y="-1">verifying_card</name>
 		</location>
-		<location id="id82" x="765" y="280">
-			<name x="782" y="263">attempt_payment</name>
+		<location id="id82" x="765" y="229">
+			<name x="782" y="212">attempt_payment</name>
 		</location>
-		<location id="id83" x="765" y="408">
-			<name x="790" y="399">connect_db</name>
+		<location id="id83" x="765" y="357">
+			<name x="790" y="348">connect_db</name>
 		</location>
 		<location id="id84" x="501" y="-229">
 			<name x="450" y="-263">check_fields</name>
@@ -510,120 +515,124 @@ bool areFieldsFilled()
 			<name x="433" y="25">card_info_invalid</name>
 			<committed/>
 		</location>
-		<location id="id86" x="765" y="-187">
-			<name x="782" y="-204">connect_verifier</name>
+		<location id="id86" x="765" y="-153">
+			<name x="782" y="-170">connect_verifier</name>
 		</location>
-		<location id="id87" x="-42" y="408">
-			<name x="-119" y="374">db_update_confirmed</name>
+		<location id="id87" x="-161" y="357">
+			<name x="-238" y="323">db_update_confirmed</name>
+		</location>
+		<location id="id88" x="603" y="229">
+			<name x="561" y="195">payment_fail</name>
 		</location>
 		<init ref="id78"/>
-		<transition id="id88">
+		<transition id="id89">
+			<source ref="id82"/>
+			<target ref="id88"/>
+		</transition>
+		<transition id="id90">
 			<source ref="id76"/>
 			<target ref="id87"/>
-			<label kind="synchronisation" x="-17" y="408">db_update_confirm[pid][user_id]?</label>
+			<label kind="synchronisation" x="-85" y="357">db_update_confirm[pid][user_id]?</label>
 		</transition>
-		<transition id="id89">
+		<transition id="id91">
 			<source ref="id82"/>
 			<target ref="id74"/>
 		</transition>
-		<transition id="id90">
+		<transition id="id92">
 			<source ref="id80"/>
 			<target ref="id86"/>
 		</transition>
-		<transition id="id91">
+		<transition id="id93">
 			<source ref="id86"/>
 			<target ref="id75"/>
-			<label kind="synchronisation" x="688" y="-170">verifier_req[pid]!</label>
-		</transition>
-		<transition id="id92">
-			<source ref="id87"/>
-			<target ref="id78"/>
-			<nail x="-195" y="408"/>
-		</transition>
-		<transition id="id93">
-			<source ref="id77"/>
-			<target ref="id76"/>
-			<label kind="synchronisation" x="255" y="408">db_update[pid][user_id]!</label>
+			<label kind="synchronisation" x="765" y="-127">verifier_req[pid]!</label>
 		</transition>
 		<transition id="id94">
-			<source ref="id83"/>
-			<target ref="id77"/>
-			<label kind="synchronisation" x="527" y="408">db_req[pid]!</label>
+			<source ref="id87"/>
+			<target ref="id78"/>
 		</transition>
 		<transition id="id95">
-			<source ref="id84"/>
-			<target ref="id85"/>
-			<label kind="guard" x="425" y="-102">not areFieldsFilled()</label>
+			<source ref="id77"/>
+			<target ref="id76"/>
+			<label kind="synchronisation" x="255" y="357">db_update[pid][user_id]!</label>
 		</transition>
 		<transition id="id96">
-			<source ref="id85"/>
-			<target ref="id79"/>
-			<label kind="synchronisation" x="272" y="-17">fields_invalid[user_id]!</label>
+			<source ref="id83"/>
+			<target ref="id77"/>
+			<label kind="synchronisation" x="578" y="357">db_req[pid]!</label>
 		</transition>
 		<transition id="id97">
-			<source ref="id81"/>
+			<source ref="id84"/>
 			<target ref="id85"/>
-			<label kind="synchronisation" x="586" y="-8">card_invalid[pid]?</label>
+			<label kind="guard" x="501" y="-136">not areFieldsFilled()</label>
 		</transition>
 		<transition id="id98">
+			<source ref="id85"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="263" y="-17">fields_invalid[user_id]!</label>
+		</transition>
+		<transition id="id99">
+			<source ref="id81"/>
+			<target ref="id85"/>
+			<label kind="synchronisation" x="561" y="-17">card_invalid[pid]?</label>
+		</transition>
+		<transition id="id100">
 			<source ref="id84"/>
 			<target ref="id80"/>
 			<label kind="guard" x="569" y="-246">areFieldsFilled()</label>
 		</transition>
-		<transition id="id99">
+		<transition id="id101">
 			<source ref="id79"/>
 			<target ref="id84"/>
-			<label kind="synchronisation" x="204" y="-136">user_confirm_payment[user_id]?</label>
-		</transition>
-		<transition id="id100">
-			<source ref="id82"/>
-			<target ref="id78"/>
-			<label kind="synchronisation" x="459" y="255">pay_credit_failed[user_id]!</label>
-			<nail x="-93" y="280"/>
-		</transition>
-		<transition id="id101">
-			<source ref="id74"/>
-			<target ref="id83"/>
-			<label kind="synchronisation" x="680" y="357">pay_credit_succeed[user_id]!</label>
+			<label kind="synchronisation" x="195" y="-136">user_confirm_payment[user_id]?</label>
+			<nail x="195" y="-229"/>
 		</transition>
 		<transition id="id102">
-			<source ref="id81"/>
-			<target ref="id82"/>
-			<label kind="synchronisation" x="697" y="204">card_verified[pid]?</label>
+			<source ref="id88"/>
+			<target ref="id78"/>
+			<label kind="synchronisation" x="195" y="204">pay_credit_failed[user_id]!</label>
+			<nail x="-93" y="229"/>
 		</transition>
 		<transition id="id103">
-			<source ref="id75"/>
-			<target ref="id81"/>
-			<label kind="synchronisation" x="705" y="-68">verify_card[pid]!</label>
+			<source ref="id74"/>
+			<target ref="id83"/>
+			<label kind="synchronisation" x="765" y="306">pay_credit_succeed[user_id]!</label>
 		</transition>
 		<transition id="id104">
-			<source ref="id79"/>
-			<target ref="id79"/>
-			<label kind="synchronisation" x="-59" y="110">enter_card_name[user_id]?</label>
-			<label kind="assignment" x="-42" y="127">card_name := true</label>
-			<nail x="25" y="144"/>
-			<nail x="93" y="186"/>
+			<source ref="id81"/>
+			<target ref="id82"/>
+			<label kind="synchronisation" x="765" y="119">card_verified[pid]?</label>
 		</transition>
 		<transition id="id105">
-			<source ref="id79"/>
-			<target ref="id79"/>
-			<label kind="synchronisation" x="280" y="119">enter_security_code[user_id]?</label>
-			<label kind="assignment" x="306" y="136">security_code := true</label>
-			<nail x="297" y="187"/>
-			<nail x="365" y="153"/>
+			<source ref="id75"/>
+			<target ref="id81"/>
+			<label kind="synchronisation" x="765" y="-51">verify_card[pid]!</label>
 		</transition>
 		<transition id="id106">
 			<source ref="id79"/>
 			<target ref="id79"/>
-			<label kind="synchronisation" x="119" y="195">enter_card_number[user_id]?</label>
-			<label kind="assignment" x="136" y="212">card_number := true</label>
-			<nail x="178" y="195"/>
-			<nail x="263" y="195"/>
+			<label kind="synchronisation" x="-59" y="85">enter_card_name[user_id]?</label>
+			<label kind="assignment" x="-59" y="102">card_name := true</label>
+			<nail x="119" y="85"/>
 		</transition>
 		<transition id="id107">
+			<source ref="id79"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="263" y="85">enter_security_code[user_id]?</label>
+			<label kind="assignment" x="263" y="102">security_code := true</label>
+			<nail x="272" y="85"/>
+		</transition>
+		<transition id="id108">
+			<source ref="id79"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="119" y="144">enter_card_number[user_id]?</label>
+			<label kind="assignment" x="119" y="161">card_number := true</label>
+			<nail x="195" y="144"/>
+		</transition>
+		<transition id="id109">
 			<source ref="id78"/>
 			<target ref="id79"/>
-			<label kind="synchronisation" x="-59" y="-17">pay_credit[user_id]?</label>
+			<label kind="synchronisation" x="-93" y="-17">pay_credit[user_id]?</label>
 			<label kind="assignment" x="-93" y="8">card_name := false,
 card_number := false,
 security_code := false</label>
@@ -633,63 +642,66 @@ security_code := false</label>
 		<name>DB_T</name>
 		<declaration>int req_pid;
 int req_user;</declaration>
-		<location id="id108" x="289" y="-178">
-			<name x="279" y="-212">process_read</name>
+		<location id="id110" x="314" y="-178">
+			<name x="331" y="-187">process_read</name>
 		</location>
-		<location id="id109" x="-289" y="-178">
-			<name x="-348" y="-212">process_update</name>
+		<location id="id111" x="-323" y="-178">
+			<name x="-306" y="-187">process_update</name>
 		</location>
-		<location id="id110" x="0" y="-323">
-			<name x="-68" y="-357">processing_request</name>
+		<location id="id112" x="0" y="-323">
+			<name x="-59" y="-357">request_received</name>
 		</location>
-		<location id="id111" x="0" y="0">
-			<name x="-25" y="8">waiting</name>
+		<location id="id113" x="0" y="0">
+			<name x="8" y="8">waiting</name>
 		</location>
-		<location id="id112" x="-289" y="-102">
+		<location id="id114" x="-323" y="0">
+			<name x="-306" y="-25">update_complete</name>
 		</location>
-		<init ref="id111"/>
-		<transition id="id113">
-			<source ref="id111"/>
-			<target ref="id111"/>
-			<label kind="synchronisation" x="-17" y="51">inc_p!</label>
+		<init ref="id113"/>
+		<transition id="id115">
+			<source ref="id113"/>
+			<target ref="id113"/>
+			<label kind="synchronisation" x="-17" y="59">inc_p!</label>
 			<nail x="0" y="68"/>
 		</transition>
-		<transition id="id114">
-			<source ref="id112"/>
-			<target ref="id111"/>
-			<label kind="synchronisation" x="-331" y="-51">db_update_alert[req_user]!</label>
-		</transition>
-		<transition id="id115">
-			<source ref="id111"/>
-			<target ref="id110"/>
-			<label kind="synchronisation" x="0" y="-178">db_req[p]?</label>
-			<label kind="assignment" x="0" y="-161">req_pid:=p,
-incP()</label>
-		</transition>
 		<transition id="id116">
-			<source ref="id108"/>
-			<target ref="id111"/>
-			<label kind="synchronisation" x="136" y="-42">db_read_send[req_pid][req_user]!</label>
-			<nail x="289" y="-102"/>
+			<source ref="id114"/>
+			<target ref="id113"/>
+			<label kind="synchronisation" x="-263" y="0">db_update_alert[req_user]!</label>
 		</transition>
 		<transition id="id117">
-			<source ref="id110"/>
-			<target ref="id108"/>
-			<label kind="select" x="76" y="-306">user:UserRange</label>
-			<label kind="synchronisation" x="68" y="-289">db_read_req[req_pid][user]?</label>
-			<label kind="assignment" x="119" y="-272">req_user:=user</label>
+			<source ref="id113"/>
+			<target ref="id112"/>
+			<label kind="synchronisation" x="8" y="-238">db_req[p]?</label>
+			<label kind="assignment" x="8" y="-221">req_pid:=p,
+incP()</label>
 		</transition>
 		<transition id="id118">
-			<source ref="id109"/>
-			<target ref="id112"/>
-			<label kind="synchronisation" x="-518" y="-153">db_update_confirm[req_pid][req_user]!</label>
+			<source ref="id110"/>
+			<target ref="id113"/>
+			<label kind="synchronisation" x="42" y="-25">db_read_send[req_pid][req_user]!</label>
+			<nail x="314" y="0"/>
 		</transition>
 		<transition id="id119">
-			<source ref="id110"/>
-			<target ref="id109"/>
-			<label kind="select" x="-263" y="-306">user:UserRange</label>
-			<label kind="synchronisation" x="-272" y="-289">db_update[req_pid][user]?</label>
-			<label kind="assignment" x="-238" y="-272">req_user:=user</label>
+			<source ref="id112"/>
+			<target ref="id110"/>
+			<label kind="select" x="322" y="-306">user:UserRange</label>
+			<label kind="synchronisation" x="322" y="-289">db_read_req[req_pid][user]?</label>
+			<label kind="assignment" x="322" y="-272">req_user:=user</label>
+			<nail x="314" y="-323"/>
+		</transition>
+		<transition id="id120">
+			<source ref="id111"/>
+			<target ref="id114"/>
+			<label kind="synchronisation" x="-323" y="-119">db_update_confirm[req_pid][req_user]!</label>
+		</transition>
+		<transition id="id121">
+			<source ref="id112"/>
+			<target ref="id111"/>
+			<label kind="select" x="-314" y="-306">user:UserRange</label>
+			<label kind="synchronisation" x="-314" y="-289">db_update[req_pid][user]?</label>
+			<label kind="assignment" x="-314" y="-272">req_user:=user</label>
+			<nail x="-323" y="-323"/>
 		</transition>
 	</template>
 	<template>
@@ -697,69 +709,69 @@ incP()</label>
 		<parameter>const ProcessRange pid, const UserRange user_id</parameter>
 		<declaration>// Place local declarations here.
 </declaration>
-		<location id="id120" x="272" y="-136">
-			<name x="246" y="-170">req_db</name>
+		<location id="id122" x="178" y="-136">
+			<name x="152" y="-170">req_db</name>
 		</location>
-		<location id="id121" x="-127" y="-8">
+		<location id="id123" x="-127" y="-8">
 			<name x="-169" y="-42">waiting</name>
 		</location>
-		<location id="id122" x="178" y="-8">
-			<name x="153" y="8">get_owed</name>
+		<location id="id124" x="178" y="-8">
+			<name x="110" y="8">get_owed</name>
 		</location>
-		<location id="id123" x="535" y="-136">
-			<name x="493" y="-170">wait_db_response</name>
+		<location id="id125" x="688" y="-136">
+			<name x="705" y="-153">wait_db_response</name>
 		</location>
-		<location id="id124" x="493" y="-8">
-			<name x="484" y="0">show_owed</name>
+		<location id="id126" x="467" y="-8">
+			<name x="475" y="0">show_owed</name>
 		</location>
-		<location id="id125" x="688" y="-8">
-			<name x="705" y="-25">check_user_status</name>
+		<location id="id127" x="688" y="-8">
+			<name x="705" y="-17">check_user_status</name>
 			<committed/>
 		</location>
-		<init ref="id121"/>
-		<transition id="id126">
-			<source ref="id124"/>
-			<target ref="id121"/>
-			<label kind="synchronisation" x="153" y="42">user_leave_dashboard[user_id]?</label>
-			<nail x="425" y="59"/>
-			<nail x="102" y="59"/>
-		</transition>
-		<transition id="id127">
-			<source ref="id125"/>
-			<target ref="id121"/>
-			<label kind="guard" x="595" y="76">not user_online[user_id]</label>
-			<nail x="526" y="136"/>
-			<nail x="50" y="136"/>
-		</transition>
+		<init ref="id123"/>
 		<transition id="id128">
-			<source ref="id125"/>
-			<target ref="id124"/>
-			<label kind="guard" x="510" y="-34">user_online[user_id]</label>
+			<source ref="id126"/>
+			<target ref="id123"/>
+			<label kind="synchronisation" x="221" y="51">user_leave_dashboard[user_id]?</label>
+			<nail x="467" y="76"/>
+			<nail x="-59" y="76"/>
 		</transition>
 		<transition id="id129">
-			<source ref="id120"/>
+			<source ref="id127"/>
 			<target ref="id123"/>
-			<label kind="synchronisation" x="306" y="-161">db_read_req[pid][user_id]!</label>
+			<label kind="guard" x="476" y="102">not user_online[user_id]</label>
+			<nail x="688" y="127"/>
+			<nail x="-127" y="127"/>
 		</transition>
 		<transition id="id130">
-			<source ref="id122"/>
-			<target ref="id120"/>
-			<label kind="synchronisation" x="161" y="-102">db_req[pid]!</label>
+			<source ref="id127"/>
+			<target ref="id126"/>
+			<label kind="guard" x="510" y="-34">user_online[user_id]</label>
 		</transition>
 		<transition id="id131">
-			<source ref="id124"/>
-			<target ref="id122"/>
-			<label kind="synchronisation" x="255" y="-8">db_update_alert[user_id]?</label>
+			<source ref="id122"/>
+			<target ref="id125"/>
+			<label kind="synchronisation" x="314" y="-153">db_read_req[pid][user_id]!</label>
 		</transition>
 		<transition id="id132">
-			<source ref="id121"/>
+			<source ref="id124"/>
 			<target ref="id122"/>
-			<label kind="synchronisation" x="-93" y="-34">user_enter_dashboard[user_id]?</label>
+			<label kind="synchronisation" x="178" y="-93">db_req[pid]!</label>
 		</transition>
 		<transition id="id133">
+			<source ref="id126"/>
+			<target ref="id124"/>
+			<label kind="synchronisation" x="229" y="-8">db_update_alert[user_id]?</label>
+		</transition>
+		<transition id="id134">
 			<source ref="id123"/>
-			<target ref="id125"/>
-			<label kind="synchronisation" x="484" y="-102">db_read_send[pid][user_id]?</label>
+			<target ref="id124"/>
+			<label kind="synchronisation" x="-93" y="-34">user_enter_dashboard[user_id]?</label>
+		</transition>
+		<transition id="id135">
+			<source ref="id125"/>
+			<target ref="id127"/>
+			<label kind="synchronisation" x="688" y="-93">db_read_send[pid][user_id]?</label>
 		</transition>
 	</template>
 	<system>Database = DB_T();
@@ -813,40 +825,40 @@ ClockU, ClockP;</system>
 		<query>
 			<formula>A&lt;&gt; PayCredit1.attempt_payment imply (PayCredit1.card_number &amp;&amp; PayCredit1.security_code &amp;&amp; PayCredit1.card_name)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; (PayCredit1.payment_succeed imply UserFlow1.payment_sent) &amp;&amp; (UserFlow1.payment_sent imply PayCredit1.payment_succeed)</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; (PayCredit1.card_info_invalid imply UserFlow1.verification_failed) &amp;&amp; (UserFlow1.verification_failed imply PayCredit1.card_info_invalid)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A[] not (PayCredit1.verifier_connected &amp;&amp; PayCredit2.verifier_connected)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A[] not (PayCredit1.db_connected &amp;&amp; PayCredit2.db_connected)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>PayCredit1.connect_verifier --&gt; PayCredit1.verifier_connected</formula>
 			<comment>Because these remote services randomly choose a channel to listen to, we cannot verify that the verifier will always connect when requested.  There might be a better way to model this but I do not know it.</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -854,7 +866,7 @@ ClockU, ClockP;</system>
 			<formula>PayCredit1.connect_db --&gt; PayCredit1.db_connected</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -862,14 +874,14 @@ ClockU, ClockP;</system>
 			<formula>Admin1.applying_credit --&gt; Admin1.idle</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>(PaymentDashboard1.check_user_status &amp;&amp; not user_online[1]) --&gt; PaymentDashboard1.waiting</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 			</result>
 		</query>
 		<query>
@@ -880,7 +892,7 @@ ClockU, ClockP;</system>
 			<formula>UserFlow1.check_submitted --&gt; Admin1.applying_credit</formula>
 			<comment>A check the user submit will cause a credit on their account</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -888,7 +900,7 @@ ClockU, ClockP;</system>
 			<formula>(CreditAccount1.db_update_confirmed &amp;&amp; CreditAccount1.user_id==1) --&gt; PaymentDashboard1.show_owed</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -896,7 +908,7 @@ ClockU, ClockP;</system>
 			<formula>CreditAccount1.db_update_confirmed --&gt; CreditAccount1.waiting</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:05:55 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
