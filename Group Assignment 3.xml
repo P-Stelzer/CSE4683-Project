@@ -42,6 +42,7 @@ chan charge_account[UserRange], charge_applied[UserRange];
 
 // Make user sending channels low priority
 chan priority user_enter_dashboard, user_leave_dashboard, user_submit_check, pay_credit, user_confirm_payment, enter_card_name, enter_card_number, enter_security_code &lt; default;
+chan priority credit_account, charge_account &lt; default;
 
 ProcessRange p;
 void incP()
@@ -798,40 +799,40 @@ ClockU, ClockP;</system>
 		<query>
 			<formula>A&lt;&gt; PayCredit1.attempt_payment imply (PayCredit1.card_number &amp;&amp; PayCredit1.security_code &amp;&amp; PayCredit1.card_name)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-04 17:47:22 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:02 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; (PayCredit1.payment_succeed imply UserFlow1.payment_sent) &amp;&amp; (UserFlow1.payment_sent imply PayCredit1.payment_succeed)</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-04 17:10:24 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:04 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; (PayCredit1.card_info_invalid imply UserFlow1.verification_failed) &amp;&amp; (UserFlow1.verification_failed imply PayCredit1.card_info_invalid)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-04 17:10:31 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:05 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A[] not (PayCredit1.verifier_connected &amp;&amp; PayCredit2.verifier_connected)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-04 17:10:42 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:06 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A[] not (PayCredit1.db_connected &amp;&amp; PayCredit2.db_connected)</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-04 17:10:50 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:08 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>PayCredit1.connect_verifier --&gt; PayCredit1.verifier_connected</formula>
 			<comment>Because these remote services randomly choose a channel to listen to, we cannot verify that the verifier will always connect when requested.  There might be a better way to model this but I do not know it.</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 01:11:36 -0400">
+			<result outcome="failure" type="quality" timestamp="2025-05-05 01:16:46 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -839,7 +840,7 @@ ClockU, ClockP;</system>
 			<formula>PayCredit1.connect_db --&gt; PayCredit1.db_connected</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 00:52:38 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:15 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -847,14 +848,14 @@ ClockU, ClockP;</system>
 			<formula>Admin1.applying_credit --&gt; Admin1.idle</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="failure" type="quality" timestamp="2025-05-05 01:11:39 -0400">
+			<result outcome="failure" type="quality" timestamp="2025-05-05 01:16:19 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>(PaymentDashboard1.check_user_status &amp;&amp; not user_online[1]) --&gt; PaymentDashboard1.waiting</formula>
 			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 00:51:21 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:21 -0400">
 			</result>
 		</query>
 		<query>
@@ -865,7 +866,7 @@ ClockU, ClockP;</system>
 			<formula>UserFlow1.check_submitted --&gt; Admin1.applying_credit</formula>
 			<comment>A check the user submit will cause a credit on their account</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="failure" type="quality" timestamp="2025-05-05 01:13:17 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:27 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -873,7 +874,7 @@ ClockU, ClockP;</system>
 			<formula>CreditAccount1.db_update_confirmed --&gt; (PaymentDashboard1.show_owed || PaymentDashboard2.show_owed)</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="failure" type="quality" timestamp="2025-05-05 01:12:43 -0400">
+			<result outcome="failure" type="quality" timestamp="2025-05-05 01:16:30 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
@@ -881,7 +882,7 @@ ClockU, ClockP;</system>
 			<formula>CreditAccount1.db_update_confirmed --&gt; CreditAccount1.waiting</formula>
 			<comment/>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 01:12:34 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 01:16:32 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
