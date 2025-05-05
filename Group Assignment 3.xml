@@ -824,64 +824,64 @@ ClockU, ClockP;</system>
 		</query>
 		<query>
 			<formula>A&lt;&gt; PayCredit1.attempt_payment imply (PayCredit1.card_number &amp;&amp; PayCredit1.security_code &amp;&amp; PayCredit1.card_name)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
+			<comment>The system will not attempt to process the payment until all of the fields are filled.</comment>
+			<result outcome="success" type="quality" timestamp="2025-05-05 18:27:05 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; (PayCredit1.payment_succeed imply UserFlow1.payment_sent) &amp;&amp; (UserFlow1.payment_sent imply PayCredit1.payment_succeed)</formula>
-			<comment/>
+			<comment>(Safety) When the PayCredit sequence has completed, the user driver should also be in completed state and vise versa. (Ensure the PayCredit sequence and user do not become unsynchronized.)</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 18:27:05 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>A&lt;&gt; (PayCredit1.card_info_invalid imply UserFlow1.verification_failed) &amp;&amp; (UserFlow1.verification_failed imply PayCredit1.card_info_invalid)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
+			<comment>(Safety) When the PayCredit sequence has failed to verify card, the user driver should also be in card invalid state and vise versa. (Ensure the PayCredit sequence and user do not become unsynchronized.)</comment>
+			<result outcome="success" type="quality" timestamp="2025-05-05 18:27:05 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A[] not (PayCredit1.verifier_connected &amp;&amp; PayCredit2.verifier_connected)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
+			<comment>(Safety) The system will not verify two users' payment info at the same time. (Mutual Exclusion)</comment>
+			<result outcome="success" type="quality" timestamp="2025-05-05 18:27:05 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>A[] not (PayCredit1.db_connected &amp;&amp; PayCredit2.db_connected)</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
+			<comment>(Safety) The system will not update two users' database entries at the same time. (Mutual Exclusion)</comment>
+			<result outcome="success" type="quality" timestamp="2025-05-05 18:27:05 -0400">
 			</result>
 		</query>
 		<query>
 			<formula>PayCredit1.connect_verifier --&gt; PayCredit1.verifier_connected</formula>
-			<comment>Because these remote services randomly choose a channel to listen to, we cannot verify that the verifier will always connect when requested.  There might be a better way to model this but I do not know it.</comment>
+			<comment>(Liveness/Fairness im not sure) The system will be able to connect to the verifier eventually after it requests to.</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 18:27:05 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>PayCredit1.connect_db --&gt; PayCredit1.db_connected</formula>
-			<comment/>
+			<comment>(Liveness/Fairness im not sure) The system will be able to connect to the database eventually after it requests to.</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 18:27:05 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>Admin1.applying_credit --&gt; Admin1.idle</formula>
-			<comment/>
+			<comment>(Liveness) Once a system beings crediting an account, it will finish.</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 18:27:05 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>(PaymentDashboard1.check_user_status &amp;&amp; not user_online[1]) --&gt; PaymentDashboard1.waiting</formula>
-			<comment/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
+			<comment>(Safety) The payment dashboard will eventually return to the waiting state if the user leaves while it is fetching from the database.</comment>
+			<result outcome="success" type="quality" timestamp="2025-05-05 18:27:05 -0400">
 			</result>
 		</query>
 		<query>
@@ -890,25 +890,17 @@ ClockU, ClockP;</system>
 		</query>
 		<query>
 			<formula>UserFlow1.check_submitted --&gt; Admin1.applying_credit</formula>
-			<comment>A check the user submit will cause a credit on their account</comment>
+			<comment>(Liveness) A check the user submit will eventually cause a credit on their account</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 18:27:05 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
 		<query>
 			<formula>(CreditAccount1.db_update_confirmed &amp;&amp; CreditAccount1.user_id==1) --&gt; PaymentDashboard1.show_owed</formula>
-			<comment/>
+			<comment>(Liveness) An update to a user's balace (e.g. credit from accepting a scholarship) will update the amount showed in their dashboard.</comment>
 			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
-				<option key="--diagnostic" value="1"/>
-			</result>
-		</query>
-		<query>
-			<formula>CreditAccount1.db_update_confirmed --&gt; CreditAccount1.waiting</formula>
-			<comment/>
-			<option key="--diagnostic" value="1"/>
-			<result outcome="success" type="quality" timestamp="2025-05-05 17:30:21 -0400">
+			<result outcome="success" type="quality" timestamp="2025-05-05 18:27:05 -0400">
 				<option key="--diagnostic" value="1"/>
 			</result>
 		</query>
