@@ -975,5 +975,11 @@ CycleListner, Bank_T;</system>
 			<result outcome="success" type="quality" timestamp="2025-05-06 00:15:38 -0400">
 			</result>
 		</query>
+		<query>
+			<formula>A[] PayCredit1.payment_succeed imply (PayCredit1.card_number &amp;&amp; PayCredit1.security_code &amp;&amp; PayCredit1.card_name)</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2025-05-06 00:17:41 -0400">
+			</result>
+		</query>
 	</queries>
 </nta>
